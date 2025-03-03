@@ -21,7 +21,7 @@ const ChatContainer = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-  const [messageFilter, setMessageFilter] = useState("todos"); // Options: "all", "urgent", "normal"
+  const [messageFilter, setMessageFilter] = useState("todos"); // Options: "todos", "urgentes", "normales"
 
   const filteredMessages = messages.filter((message) => {
     const typeMatch =
