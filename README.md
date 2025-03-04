@@ -2,6 +2,8 @@
 
 [ChatDocente](/frontend/public/screenshot-readme.png)
 
+https://chatdocente.onrender.com/
+
 Caracteristicas:
 
 - 🌟 Stack tecnológico: MERN + Socket.io + TailwindCSS + Daisy UI
