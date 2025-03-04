@@ -45,9 +45,18 @@ export const sendMessage = async (req, res) => {
 
     let imageUrl;
     if (image) {
-      // Upload base64 image to cloudinary
-      const uploadResponse = await cloudinary.uploader.upload(image);
-      imageUrl = uploadResponse.secure_url;
+      try {
+        // Upload base64 image to cloudinary
+        const uploadResponse = await cloudinary.uploader.upload(image);
+        imageUrl = uploadResponse.secure_url;
+      } catch (error) {
+        if (error.http_code === 413) {
+          return res
+            .status(400)
+            .json({ error: "La imagen es demasiado grande" });
+        }
+        throw error;
+      }
     }
 
     const newMessage = new Message({
