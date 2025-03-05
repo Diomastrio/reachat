@@ -13,13 +13,14 @@ Caracteristicas:
 - 🚀 Estado de usuario en línea
 - 👌 Gestión de estado global con Zustand
 - 🐞 Manejo de errores tanto en el servidor como en el cliente
-- 🔍 Funcionalidades de Filtrado y Búsqueda
+- 🔍 Funcionalidades avanzadas de Filtrado y Búsqueda
 - ⚠️ Validaciones y Mensajes de Error
-- ✅ Visualización del Estado del Mensaje
+- ✅ Visualización del Estado del Mensaje (leído no leído)
 - 🟢 Indicadores de Usuario en Línea
 - 🚨 Soporte para Mensajes Urgentes
 - 🖼️ Subida de Imágenes para perfil y mensajes con claudinary
 - ⭐ Al final, despliegue en render
+
 
 ### configuración archivo .env en la raiz del backend
 
