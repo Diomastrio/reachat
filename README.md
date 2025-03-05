@@ -2,6 +2,8 @@
 
 [ChatDocente](/frontend/public/screenshot-readme.png)
 
+https://chatdocente.onrender.com/
+
 Caracteristicas:
 
 - 🌟 Stack tecnológico: MERN + Socket.io + TailwindCSS + Daisy UI
@@ -19,7 +21,7 @@ Caracteristicas:
 - 🖼️ Subida de Imágenes para perfil y mensajes con claudinary
 - ⭐ Al final, despliegue en render
 
-### configuración archivo .env
+### configuración archivo .env en la raiz del backend
 
 ```js
 MONGODB_URI=...
@@ -30,17 +32,24 @@ CLOUDINARY_CLOUD_NAME=...
 CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 GOOGLE_SECRET_KEY=...
+
 NODE_ENV=development
 ```
 
-### Build the app
+### Hacer el build
 
 ```shell
 npm run build
 ```
 
-### Start the app
+### Iniciar el backend
 
 ```shell
 npm start
+```
+
+### Iniciar el frontend
+
+```shell
+npm run dev
 ```
