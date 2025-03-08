@@ -2,20 +2,70 @@ import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
-import { Users, Search } from "lucide-react";
+import { Users, Search, MoreVertical } from "lucide-react";
+const ChatActionsModal = ({
+  isOpen,
+  onClose,
+  onArchive,
+  isArchived,
+  userId,
+}) => {
+  if (!isOpen) return null;
 
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+      <div className="bg-base-100 rounded-lg shadow-xl w-72 overflow-hidden">
+        <div className="p-0">
+          <button
+            className="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors"
+            onClick={() => {
+              onArchive(userId);
+              onClose();
+            }}
+          >
+            {isArchived ? "Unarchive Chat" : "Archive Chat"}
+          </button>
+        </div>
+        <div className="p-3 border-t border-base-300 flex justify-end">
+          <button className="btn btn-sm btn-ghost" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 const Sidebar = () => {
-  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
-    useChatStore();
+  const {
+    getUsers,
+    users,
+    selectedUser,
+    setSelectedUser,
+    isUsersLoading,
+    archivedUserIds,
+    showArchived,
+    toggleShowArchived,
+    archiveChat,
+    unarchiveChat,
+  } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeUserId, setActiveUserId] = useState(null);
   useEffect(() => {
     getUsers();
   }, [getUsers]);
 
   const filteredUsers = users
+    .filter((user) => {
+      // Filter based on archived status
+      if (showArchived) {
+        return archivedUserIds.includes(user._id);
+      } else {
+        return !archivedUserIds.includes(user._id);
+      }
+    })
     .filter((user) => (showOnlineOnly ? onlineUsers.includes(user._id) : true))
     .filter((user) =>
       user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -42,7 +92,6 @@ const Sidebar = () => {
             />
           </div>
         </div>
-        {/* TODO: Online filter toggle */}
         <div className="mt-3 hidden lg:flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
@@ -57,54 +106,102 @@ const Sidebar = () => {
             ({onlineUsers.length - 1} online)
           </span>
         </div>
+        <div className="mt-3 hidden lg:block">
+          <button
+            onClick={toggleShowArchived}
+            className="btn btn-ghost btn-sm text-xs flex items-center gap-2"
+          >
+            {showArchived
+              ? "Mostrar Chats Activos"
+              : "Mostrar Chats Archivados"}
+          </button>
+        </div>
+      </div>
+
+      <div className="px-3 py-2 text-xs font-semibold text-zinc-500">
+        {showArchived ? "Archived Chats" : "Active Chats"}
       </div>
 
       <div className="overflow-y-auto w-full py-3">
-        {filteredUsers.map((user) => (
-          <button
-            key={user._id}
-            onClick={() => setSelectedUser(user)}
-            className={`
-              w-full p-3 flex items-center gap-3
-              hover:bg-base-300 transition-colors
-              ${
-                selectedUser?._id === user._id
-                  ? "bg-base-300 ring-1 ring-base-300"
-                  : ""
-              }
-            `}
-          >
-            <div className="relative mx-auto lg:mx-0">
-              <img
-                src={user.profilePic || "/avatar.png"}
-                alt={user.name}
-                className="size-12 object-cover rounded-full"
-              />
-              {onlineUsers.includes(user._id) && (
-                <span
-                  className="absolute bottom-0 right-0 size-3 bg-green-500 
-                  rounded-full ring-2 ring-zinc-900"
-                />
-              )}
-            </div>
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user) => (
+            <div key={user._id} className="relative">
+              <button
+                onClick={() => setSelectedUser(user)}
+                className={`
+                  w-full p-3 flex items-center gap-3
+                  hover:bg-base-300 transition-colors
+                  ${
+                    selectedUser?._id === user._id
+                      ? "bg-base-300 ring-1 ring-base-300"
+                      : ""
+                  }
+                `}
+              >
+                <div className="relative mx-auto lg:mx-0">
+                  <img
+                    src={user.profilePic || "/avatar.png"}
+                    alt={user.name}
+                    className="size-12 object-cover rounded-full"
+                  />
+                  {onlineUsers.includes(user._id) && (
+                    <span
+                      className="absolute bottom-0 right-0 size-3 bg-green-500 
+                      rounded-full ring-2 ring-zinc-900"
+                    />
+                  )}
+                </div>
 
-            {/* User info - only visible on larger screens */}
-            <div className="hidden lg:block text-left min-w-0">
-              <div className="font-medium truncate">{user.fullName}</div>
-              <div className="text-sm text-zinc-400">
-                {onlineUsers.includes(user._id) ? "Online" : "Offline"}
-              </div>
-            </div>
-          </button>
-        ))}
+                {/* User info - only visible on larger screens */}
+                <div className="hidden lg:block text-left min-w-0 flex-1">
+                  <div className="font-medium truncate">{user.fullName}</div>
+                  <div className="text-sm text-zinc-400">
+                    {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+                  </div>
+                </div>
 
-        {filteredUsers.length === 0 && (
+                {/* 3-dot icon */}
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-circle"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveUserId(user._id);
+                    setModalOpen(true);
+                  }}
+                >
+                  <MoreVertical className="size-5" />
+                </button>
+              </button>
+
+              {/* Dropdown menu */}
+            </div>
+          ))
+        ) : (
           <div className="text-center text-zinc-500 py-4">
-            Ningún usuario en línea
+            {showArchived
+              ? "No hay chats archivados"
+              : "Ningún usuario en línea"}
           </div>
         )}
       </div>
+      <ChatActionsModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onArchive={(userId) => {
+          if (archivedUserIds.includes(userId)) {
+            unarchiveChat(userId);
+          } else {
+            archiveChat(userId);
+          }
+        }}
+        isArchived={
+          activeUserId ? archivedUserIds.includes(activeUserId) : false
+        }
+        userId={activeUserId}
+      />
     </aside>
   );
 };
+
 export default Sidebar;

@@ -1,7 +1,25 @@
+/* eslint-disable no-unused-vars */
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
+
+const useArchiveState = (set, get) => ({
+  archivedUserIds: [],
+  showArchived: false,
+  toggleShowArchived: () =>
+    set((state) => ({ showArchived: !state.showArchived })),
+  archiveChat: (userId) =>
+    set((state) => ({
+      archivedUserIds: [...state.archivedUserIds, userId],
+      selectedUser:
+        state.selectedUser?._id === userId ? null : state.selectedUser,
+    })),
+  unarchiveChat: (userId) =>
+    set((state) => ({
+      archivedUserIds: state.archivedUserIds.filter((id) => id !== userId),
+    })),
+});
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -99,4 +117,5 @@ export const useChatStore = create((set, get) => ({
   },
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),
+  ...useArchiveState(set, get),
 }));
