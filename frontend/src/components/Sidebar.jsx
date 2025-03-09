@@ -9,15 +9,22 @@ const ChatActionsModal = ({
   onArchive,
   isArchived,
   userId,
+  position,
 }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <div className="bg-base-100 rounded-lg shadow-xl w-72 overflow-hidden">
+    <div
+      className="fixed z-50"
+      style={{
+        top: position.top,
+        left: position.left,
+      }}
+    >
+      <div className="bg-base-100 rounded-lg shadow-xl w-48 overflow-hidden">
         <div className="p-0">
           <button
-            className="w-full text-left px-4 py-3 hover:bg-base-200 transition-colors"
+            className="w-full text-left px-4 py-2 hover:bg-base-200 transition-colors"
             onClick={() => {
               onArchive(userId);
               onClose();
@@ -26,9 +33,9 @@ const ChatActionsModal = ({
             {isArchived ? "Unarchive Chat" : "Archive Chat"}
           </button>
         </div>
-        <div className="p-3 border-t border-base-300 flex justify-end">
+        <div className="p-1 border-t border-base-300 flex justify-end">
           <button className="btn btn-sm btn-ghost" onClick={onClose}>
-            Close
+            X
           </button>
         </div>
       </div>
@@ -53,6 +60,8 @@ const Sidebar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [activeUserId, setActiveUserId] = useState(null);
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+
   useEffect(() => {
     getUsers();
   }, [getUsers]);
@@ -166,6 +175,11 @@ const Sidebar = () => {
                   className="btn btn-ghost btn-circle"
                   onClick={(e) => {
                     e.stopPropagation();
+                    const rect = e.target.getBoundingClientRect();
+                    setModalPosition({
+                      top: rect.top + window.scrollY - 50,
+                      left: rect.left + window.scrollX - 100,
+                    });
                     setActiveUserId(user._id);
                     setModalOpen(true);
                   }}
@@ -173,8 +187,6 @@ const Sidebar = () => {
                   <MoreVertical className="size-5" />
                 </button>
               </button>
-
-              {/* Dropdown menu */}
             </div>
           ))
         ) : (
@@ -199,6 +211,7 @@ const Sidebar = () => {
           activeUserId ? archivedUserIds.includes(activeUserId) : false
         }
         userId={activeUserId}
+        position={modalPosition}
       />
     </aside>
   );
