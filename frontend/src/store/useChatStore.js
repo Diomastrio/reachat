@@ -115,7 +115,34 @@ export const useChatStore = create((set, get) => ({
     socket.off("newMessage");
     socket.off("messageRead");
   },
+  editMessage: async (messageId, updatedData) => {
+    try {
+      const res = await axiosInstance.put(
+        `/messages/edit/${messageId}`,
+        updatedData
+      );
+      set((state) => ({
+        messages: state.messages.map((message) =>
+          message._id === messageId ? res.data : message
+        ),
+      }));
+      toast.success("Message updated successfully");
+    } catch (error) {
+      toast.error("Failed to update message");
+    }
+  },
 
+  deleteMessage: async (messageId) => {
+    try {
+      await axiosInstance.delete(`/messages/delete/${messageId}`);
+      set((state) => ({
+        messages: state.messages.filter((message) => message._id !== messageId),
+      }));
+      toast.success("Message deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete message");
+    }
+  },
   setSelectedUser: (selectedUser) => set({ selectedUser }),
   ...useArchiveState(set, get),
 }));

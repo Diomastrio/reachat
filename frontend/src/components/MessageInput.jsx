@@ -1,14 +1,22 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, X, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
-const MessageInput = () => {
+const MessageInput = ({ editingMessage, setEditingMessage, editMessage }) => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [isUrgent, setIsUrgent] = useState(false);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
+
+  useEffect(() => {
+    if (editingMessage) {
+      setText(editingMessage.text || "");
+      setImagePreview(editingMessage.image || null);
+      setIsUrgent(editingMessage.isUrgent || false);
+    }
+  }, [editingMessage]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -34,11 +42,20 @@ const MessageInput = () => {
     if (!text.trim() && !imagePreview) return;
 
     try {
-      await sendMessage({
-        text: text.trim(),
-        image: imagePreview,
-        isUrgent,
-      });
+      if (editingMessage) {
+        await editMessage(editingMessage._id, {
+          text: text.trim(),
+          image: imagePreview,
+          isUrgent,
+        });
+        setEditingMessage(null);
+      } else {
+        await sendMessage({
+          text: text.trim(),
+          image: imagePreview,
+          isUrgent,
+        });
+      }
 
       // Clear form
       setText("");
