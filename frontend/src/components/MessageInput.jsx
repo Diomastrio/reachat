@@ -57,6 +57,9 @@ const MessageInput = ({ editingMessage, setEditingMessage, editMessage }) => {
         });
       }
 
+      // Log the message to the console
+      console.info("Mensaje enviado:", text.trim());
+
       // Clear form
       setText("");
       setImagePreview(null);
