@@ -59,7 +59,13 @@ const assignmentSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    attachments: [String],
+    attachments: [
+      {
+        filename: String,
+        data: Buffer,
+        contentType: String,
+      },
+    ],
     submissions: [submissionSchema],
     status: {
       type: String,
