@@ -25,6 +25,32 @@ io.on("connection", (socket) => {
 
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+  socket.on("createAssignment", (data) => {
+    const { assignedTo } = data;
+    for (const userId of assignedTo) {
+      const socketId = userSocketMap[userId];
+      if (socketId) {
+        io.to(socketId).emit("newAssignment", data);
+      }
+    }
+  });
+
+  socket.on("submitAssignment", (data) => {
+    const { creatorId } = data;
+    const socketId = userSocketMap[creatorId];
+    if (socketId) {
+      io.to(socketId).emit("newSubmission", data);
+    }
+  });
+
+  socket.on("gradeSubmission", (data) => {
+    const { studentId } = data;
+    const socketId = userSocketMap[studentId];
+    if (socketId) {
+      io.to(socketId).emit("submissionGraded", data);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("A user disconnected", socket.id);
     delete userSocketMap[userId];
