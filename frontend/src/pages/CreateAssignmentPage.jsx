@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssignmentStore } from "../store/useAssignmentStore";
 import { useChatStore } from "../store/useChatStore";
-import { Calendar, File, ImagePlus, Loader, X } from "lucide-react";
+import { Calendar, File as FileIcon, ImagePlus, Loader, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 const CreateAssignmentPage = () => {
@@ -11,12 +11,13 @@ const CreateAssignmentPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
+  // Fix: initialize attachments as an array, not a string
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     dueDate: "",
     assignedTo: [],
-    attachments: [],
+    attachments: [], // FIXED: initialize as array
   });
 
   const [attachmentPreviews, setAttachmentPreviews] = useState([]);
@@ -45,31 +46,44 @@ const CreateAssignmentPage = () => {
 
     if (files.length === 0) return;
 
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    const validFiles = [];
+    const newPreviews = [];
+
     files.forEach((file) => {
-      if (file.size > 10 * 1024 * 1024) {
-        // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         toast.error(`File ${file.name} is too large. Max size is 5MB.`);
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAttachmentPreviews((prev) => [
-          ...prev,
-          {
-            name: file.name,
-            preview: reader.result,
-            type: file.type,
-          },
-        ]);
+      // Check file type
+      if (!allowedTypes.includes(file.type)) {
+        toast.error(
+          `File ${file.name} has an invalid type. Only PDF and DOC/DOCX files are allowed.`
+        );
+        return;
+      }
 
-        setFormData((prev) => ({
-          ...prev,
-          attachments: [...prev.attachments, reader.result],
-        }));
-      };
-      reader.readAsDataURL(file);
+      // Add valid file to arrays
+      validFiles.push(file);
+      newPreviews.push({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+      });
     });
+
+    // Update state with valid files
+    setAttachmentPreviews((prev) => [...prev, ...newPreviews]);
+    setFormData((prev) => ({
+      ...prev,
+      attachments: [...prev.attachments, ...validFiles],
+    }));
   };
 
   const removeAttachment = (index) => {
@@ -82,6 +96,9 @@ const CreateAssignmentPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Debug: Log form data before submission
+    console.log("Form data before submission:", formData);
 
     if (!formData.title.trim()) {
       return toast.error("Title is required");
@@ -100,12 +117,43 @@ const CreateAssignmentPage = () => {
     }
 
     try {
-      const assignment = await createAssignment(formData);
+      // Create FormData object for file uploads
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("dueDate", formData.dueDate);
+
+      // Add assigned users
+      formData.assignedTo.forEach((userId) => {
+        formDataToSend.append("assignedTo", userId);
+      });
+
+      // Add attachment files if they exist
+      if (formData.attachments && formData.attachments.length > 0) {
+        formData.attachments.forEach((file) => {
+          // Change "attachments" to "files" to match what multer expects in the backend
+          formDataToSend.append("files", file); // CHANGED FROM "attachments" to "files"
+        });
+      }
+
+      // Debug: Log formDataToSend entries
+      for (const [key, value] of formDataToSend.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      // Add right before sending to server
+      console.log("Sending assignment data to server");
+      for (const [key, value] of formDataToSend.entries()) {
+        console.log(`${key}: ${value instanceof File ? value.name : value}`);
+      }
+
+      const assignment = await createAssignment(formDataToSend);
       if (assignment) {
         navigate(`/assignments/${assignment._id}`);
       }
     } catch (error) {
       console.error("Failed to create assignment:", error);
+      toast.error(error.message || "Failed to create assignment");
     }
   };
 
@@ -214,11 +262,12 @@ const CreateAssignmentPage = () => {
                   ref={fileInputRef}
                   type="file"
                   multiple
+                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   className="hidden"
                   onChange={handleAttachmentChange}
                 />
                 <span className="text-xs text-base-content/60">
-                  Max size: 5MB per file
+                  Only PDF and DOC/DOCX files (max 5MB)
                 </span>
               </div>
 
@@ -230,7 +279,7 @@ const CreateAssignmentPage = () => {
                       className="flex items-center gap-2 p-2 border rounded-lg bg-base-200"
                     >
                       <div className="flex-1 flex items-center gap-2 overflow-hidden">
-                        <File className="size-5 flex-shrink-0" />
+                        <FileIcon className="size-5 flex-shrink-0" />
                         <span className="text-sm truncate">{file.name}</span>
                       </div>
                       <button

@@ -3,10 +3,7 @@ import { axiosInstance } from "./axios";
 export const assignmentService = {
   createAssignment: async (assignmentData) => {
     try {
-      const response = await axiosInstance.post(
-        "/assignments/create",
-        assignmentData
-      );
+      const response = await axiosInstance.post("/assignments", assignmentData);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: "Failed to create assignment" };

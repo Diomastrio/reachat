@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAssignmentStore } from "../store/useAssignmentStore";
@@ -14,6 +15,8 @@ import {
   UserCircle,
   X,
 } from "lucide-react";
+import { assignmentService } from "../lib/assignmentService";
+// import FileComp from "../components/FileComp";
 import toast from "react-hot-toast";
 import { formatDate, formatTimeRemaining } from "../lib/utils";
 
@@ -34,6 +37,7 @@ const AssignmentDetailPage = () => {
   const [attachmentPreviews, setAttachmentPreviews] = useState([]);
   const [viewSubmission, setViewSubmission] = useState(null);
   const [gradeData, setGradeData] = useState({ score: "", feedback: "" });
+  const [previewFile, setPreviewFile] = useState(null);
 
   useEffect(() => {
     getAssignmentById(id);
@@ -56,33 +60,57 @@ const AssignmentDetailPage = () => {
   );
   const isPastDue = new Date(currentAssignment.dueDate) < new Date();
 
+  // Update the handleAttachmentChange function to better match CreateAssignmentPage
   const handleAttachmentChange = (e) => {
     const files = Array.from(e.target.files);
 
     if (files.length === 0) return;
 
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    const validFiles = [];
+    const newPreviews = [];
+
     files.forEach((file) => {
-      if (file.size > 10 * 1024 * 1024) {
-        // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         toast.error(`File ${file.name} is too large. Max size is 5MB.`);
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAttachmentPreviews((prev) => [
-          ...prev,
-          {
-            name: file.name,
-            preview: reader.result,
-            type: file.type,
-          },
-        ]);
+      // Check file type
+      if (!allowedTypes.includes(file.type)) {
+        toast.error(
+          `File ${file.name} has an invalid type. Only PDF and DOC/DOCX files are allowed.`
+        );
+        return;
+      }
 
-        setSubmissionAttachments((prev) => [...prev, reader.result]);
-      };
-      reader.readAsDataURL(file);
+      // Add valid file to arrays
+      validFiles.push(file);
+      newPreviews.push({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+      });
     });
+
+    // Update state with valid files
+    setAttachmentPreviews((prev) => [...prev, ...newPreviews]);
+    setSubmissionAttachments((prev) => [...prev, ...validFiles]);
+  };
+
+  // Add a function to preview files
+  const handlePreviewFile = (file, fileName) => {
+    setPreviewFile({ file, fileName });
+  };
+
+  // Add a function to close preview
+  const closePreview = () => {
+    setPreviewFile(null);
   };
 
   const removeAttachment = (index) => {
@@ -98,7 +126,8 @@ const AssignmentDetailPage = () => {
     }
 
     try {
-      await submitAssignment(currentAssignment._id, {
+      // Use the submitAssignmentWithFiles method from the service
+      await assignmentService.submitAssignmentWithFiles(currentAssignment._id, {
         content: submissionContent,
         attachments: submissionAttachments,
       });
@@ -106,8 +135,12 @@ const AssignmentDetailPage = () => {
       setSubmissionContent("");
       setSubmissionAttachments([]);
       setAttachmentPreviews([]);
+
+      // Refresh assignment data
+      getAssignmentById(currentAssignment._id);
     } catch (error) {
       console.error("Failed to submit assignment:", error);
+      toast.error(error.message || "Failed to submit assignment");
     }
   };
 
@@ -193,21 +226,24 @@ const AssignmentDetailPage = () => {
               <div className="mb-6">
                 <h2 className="text-lg font-medium mb-3">Attachments</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {currentAssignment.attachments.map((attachment, index) => (
-                    <a
-                      key={index}
-                      href={attachment}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-3 border rounded-lg hover:bg-base-200 transition-colors"
-                    >
-                      <File className="size-5 flex-shrink-0" />
-                      <span className="flex-1 truncate">
-                        Attachment {index + 1}
-                      </span>
-                      <Download className="size-4" />
-                    </a>
-                  ))}
+                  {currentAssignment.attachments.map((attachment, index) => {
+                    return (
+                      <a
+                        key={index}
+                        href={`/api/assignments/${id}/files/assignment/${attachment._id}`}
+                        download={
+                          attachment.filename || `attachment-${index + 1}`
+                        }
+                        className="flex items-center gap-2 p-3 border rounded-lg hover:bg-base-200 transition-colors"
+                      >
+                        <File className="size-5 flex-shrink-0" />
+                        <span className="flex-1 truncate">
+                          {attachment.filename || `Attachment ${index + 1}`}
+                        </span>
+                        <Download className="size-4" />
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -256,24 +292,28 @@ const AssignmentDetailPage = () => {
                             </p>
                           </div>
 
+                          {/* Update this section in your component where you display attachments */}
                           {submission.attachments?.length > 0 && (
                             <div className="mt-3">
                               <h3 className="text-sm font-medium mb-2">
                                 Attachments
                               </h3>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {submission.attachments.map(
+                                {submission.attachments?.map(
                                   (attachment, idx) => (
                                     <a
                                       key={idx}
-                                      href={attachment}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
+                                      href={`/api/assignments/files/${attachment.filename}`}
+                                      download={
+                                        attachment.originalname ||
+                                        `attachment-${idx + 1}`
+                                      }
                                       className="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 transition-colors"
                                     >
                                       <File className="size-4 flex-shrink-0" />
                                       <span className="flex-1 truncate text-sm">
-                                        Attachment {idx + 1}
+                                        {attachment.originalname ||
+                                          `Attachment ${idx + 1}`}
                                       </span>
                                       <Download className="size-3" />
                                     </a>
@@ -424,21 +464,22 @@ const AssignmentDetailPage = () => {
                           Your Attachments
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {mySubmission.attachments.map((attachment, idx) => (
-                            <a
-                              key={idx}
-                              href={attachment}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 transition-colors"
-                            >
-                              <File className="size-4 flex-shrink-0" />
-                              <span className="flex-1 truncate text-sm">
-                                Attachment {idx + 1}
-                              </span>
-                              <Download className="size-3" />
-                            </a>
-                          ))}
+                          {mySubmission.attachments.map((attachment, idx) => {
+                            return (
+                              <a
+                                key={idx}
+                                href={attachment}
+                                download={`my-attachment-${idx + 1}`}
+                                className="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 transition-colors"
+                              >
+                                <File className="size-4 flex-shrink-0" />
+                                <span className="flex-1 truncate text-sm">
+                                  Attachment {idx + 1}
+                                </span>
+                                <Download className="size-3" />
+                              </a>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -498,6 +539,7 @@ const AssignmentDetailPage = () => {
                           Attachments (Optional)
                         </span>
                       </label>
+                      {/* Update the file upload section */}
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
@@ -511,11 +553,12 @@ const AssignmentDetailPage = () => {
                           ref={fileInputRef}
                           type="file"
                           multiple
+                          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                           className="hidden"
                           onChange={handleAttachmentChange}
                         />
                         <span className="text-xs text-base-content/60">
-                          Max size: 5MB per file
+                          Only PDF and DOC/DOCX files (max 5MB)
                         </span>
                       </div>
 

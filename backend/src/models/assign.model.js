@@ -12,9 +12,8 @@ const submissionSchema = new mongoose.Schema({
   },
   attachments: [
     {
-      filename: String,
-      data: Buffer,
-      contentType: String, // 'application/pdf'
+      file: String,
+      title: String,
     },
   ],
   submittedAt: {
@@ -61,9 +60,8 @@ const assignmentSchema = new mongoose.Schema(
     ],
     attachments: [
       {
-        filename: String,
-        data: Buffer,
-        contentType: String,
+        file: String,
+        title: String,
       },
     ],
     submissions: [submissionSchema],
