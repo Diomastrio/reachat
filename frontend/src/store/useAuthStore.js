@@ -83,6 +83,47 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  forgotPassword: async (email) => {
+    try {
+      const res = await axiosInstance.post("/auth/forgot-password", {
+        email,
+      });
+      toast.success(
+        "Si el correo existe, recibirás un enlace para restablecer tu contraseña"
+      );
+      return res.data;
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Error al procesar la solicitud"
+      );
+      throw error;
+    }
+  },
+
+  verifyResetToken: async (token) => {
+    try {
+      return await axiosInstance.get(`/auth/reset-password/${token}/verify`);
+    } catch (error) {
+      toast.error("El enlace es inválido o ha expirado");
+      throw error;
+    }
+  },
+
+  resetPassword: async (token, password) => {
+    try {
+      const res = await axiosInstance.post(`/auth/reset-password/${token}`, {
+        password,
+      });
+      toast.success("Contraseña actualizada correctamente");
+      return res.data;
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Error al restablecer la contraseña"
+      );
+      throw error;
+    }
+  },
+
   connectSocket: () => {
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;

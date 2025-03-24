@@ -116,6 +116,9 @@ const LoginPage = () => {
                 "Sign in"
               )}
             </button>
+            <div className="auth-links">
+              <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
+            </div>
           </form>
 
           <div className="text-center">

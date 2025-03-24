@@ -8,7 +8,8 @@ import ProfilePage from "./pages/ProfilePage";
 import AssignmentsPage from "./pages/AssignmentsPage";
 import AssignmentDetailPage from "./pages/AssignmentDetailPage";
 import CreateAssignmentPage from "./pages/CreateAssignmentPage";
-
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
@@ -74,6 +75,8 @@ const App = () => {
             authUser ? <AssignmentDetailPage /> : <Navigate to="/login" />
           }
         />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
 
       <Toaster />
