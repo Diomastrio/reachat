@@ -57,7 +57,7 @@ export const assignmentService = {
   gradeSubmission: async (assignmentId, submissionId, gradeData) => {
     try {
       const response = await axiosInstance.post(
-        `/assignments/${assignmentId}/grade/${submissionId}`,
+        `/assignments/${assignmentId}/submissions/${submissionId}/grade`,
         gradeData
       );
       return response.data;
