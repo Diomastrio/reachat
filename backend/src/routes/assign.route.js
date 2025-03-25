@@ -10,7 +10,7 @@ import {
 } from "../controllers/assign.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import upload from "../utils/multerConfig.js";
-import Assignment from "../models/assignment.model.js"; // Make sure this is added if not already present
+import Assignment from "../models/assign.model.js"; // Make sure this is added if not already present
 import mime from "mime-types"; // You may need to install this package
 import fs from "fs";
 
