@@ -231,14 +231,12 @@ const AssignmentDetailPage = () => {
                       <a
                         key={index}
                         href={`/api/assignments/${id}/files/assignment/${attachment._id}`}
-                        download={
-                          attachment.filename || `attachment-${index + 1}`
-                        }
+                        download={attachment.title || `attachment-${index + 1}`}
                         className="flex items-center gap-2 p-3 border rounded-lg hover:bg-base-200 transition-colors"
                       >
                         <File className="size-5 flex-shrink-0" />
                         <span className="flex-1 truncate">
-                          {attachment.filename || `Attachment ${index + 1}`}
+                          {attachment.title || `Attachment ${index + 1}`}
                         </span>
                         <Download className="size-4" />
                       </a>
@@ -303,16 +301,16 @@ const AssignmentDetailPage = () => {
                                   (attachment, idx) => (
                                     <a
                                       key={idx}
-                                      href={`/api/assignments/files/${attachment.filename}`}
+                                      href={`/api/assignments/files/${attachment.file}`}
                                       download={
-                                        attachment.originalname ||
+                                        attachment.title ||
                                         `attachment-${idx + 1}`
                                       }
                                       className="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 transition-colors"
                                     >
                                       <File className="size-4 flex-shrink-0" />
                                       <span className="flex-1 truncate text-sm">
-                                        {attachment.originalname ||
+                                        {attachment.title ||
                                           `Attachment ${idx + 1}`}
                                       </span>
                                       <Download className="size-3" />

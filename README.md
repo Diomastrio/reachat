@@ -20,6 +20,19 @@ Caracteristicas:
 - 🚨 Soporte para Mensajes Urgentes
 - 🖼️ Subida de Imágenes para perfil y mensajes con claudinary
 - ⭐ Al final, despliegue en render
+- 📇 Perfil de usuario personalizable con foto de perfil
+- 🗂️ Sistema de archivado de chats
+- 🔔 Opción para mostrar solo usuarios conectados
+- 🔍 Búsqueda de mensajes dentro de conversaciones
+- 🔄 Filtros para visualizar mensajes (todos/urgentes/normales)
+- 🔒 Recuperación de contraseña con tokens y enlace temporal
+- 📱 Diseño responsive para dispositivos móviles y de escritorio
+- 📆 Información de cuenta con fecha de registro
+- 📝 Formularios con validación completa
+- 📨 Sistema de recuperación de contraseña con Nodemailer
+- 📅 Sistema de gestión de tareas y recordatorios
+- 📧 Envío de correos electrónicos para recuperación de cuenta
+- ⏱️ Tokens de restablecimiento con expiración por seguridad
 
 ### configuración archivo .env en la raiz del backend
 
@@ -32,6 +45,12 @@ CLOUDINARY_CLOUD_NAME=...
 CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 GOOGLE_SECRET_KEY=...
+
+# Configuración para nodemailer
+EMAIL_USER=...
+EMAIL_PASSWORD=...
+EMAIL_FROM=...
+FRONTEND_URL=...
 
 NODE_ENV=development
 ```
