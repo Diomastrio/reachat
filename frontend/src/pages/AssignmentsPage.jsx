@@ -60,10 +60,10 @@ const AssignmentsPage = () => {
     <div className="h-screen pt-20">
       <div className="max-w-6xl mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Assignments</h1>
+          <h1 className="text-2xl font-bold">Asignaciones</h1>
           <Link to="/assignments/create" className="btn btn-primary btn-sm">
             <BookPlus className="size-4 mr-2" />
-            Create Assignment
+            Crear Tarea
           </Link>
         </div>
 
@@ -74,7 +74,7 @@ const AssignmentsPage = () => {
             }`}
             onClick={() => setFilter("all")}
           >
-            All
+            Todas
           </button>
           <button
             className={`btn btn-sm ${
@@ -82,7 +82,7 @@ const AssignmentsPage = () => {
             }`}
             onClick={() => setFilter("created")}
           >
-            Created By Me
+            Creadas por mí
           </button>
           <button
             className={`btn btn-sm ${
@@ -90,7 +90,7 @@ const AssignmentsPage = () => {
             }`}
             onClick={() => setFilter("assigned")}
           >
-            Assigned To Me
+            Asignadas a mí
           </button>
           <button
             className={`btn btn-sm ${
@@ -98,7 +98,7 @@ const AssignmentsPage = () => {
             }`}
             onClick={() => setFilter("pending")}
           >
-            Pending
+            Pendientes
           </button>
           <button
             className={`btn btn-sm ${
@@ -106,7 +106,7 @@ const AssignmentsPage = () => {
             }`}
             onClick={() => setFilter("completed")}
           >
-            Completed
+            Completadas
           </button>
         </div>
 
@@ -117,11 +117,13 @@ const AssignmentsPage = () => {
         ) : filteredAssignments.length === 0 ? (
           <div className="text-center py-12 bg-base-200 rounded-lg">
             <Book className="size-12 mx-auto mb-4 text-base-content/50" />
-            <h3 className="text-lg font-medium mb-2">No assignments found</h3>
+            <h3 className="text-lg font-medium mb-2">
+              No se encontraron asignaciones
+            </h3>
             <p className="text-base-content/60">
               {filter === "all"
-                ? "There are no assignments yet."
-                : `No assignments match the "${filter}" filter.`}
+                ? "Aún no hay asignaciones."
+                : `No hay asignaciones que coincidan con el filtro "${filter}".`}
             </p>
           </div>
         ) : (
@@ -148,14 +150,14 @@ const AssignmentsPage = () => {
                       </h2>
                       {isCreator ? (
                         <span className="badge badge-primary">
-                          Your Assignment
+                          Tu asignación
                         </span>
                       ) : hasSubmitted ? (
-                        <span className="badge badge-success">Submitted</span>
+                        <span className="badge badge-success">Enviado</span>
                       ) : isPastDue ? (
-                        <span className="badge badge-error">Past Due</span>
+                        <span className="badge badge-error">Vencida</span>
                       ) : (
-                        <span className="badge badge-warning">Pending</span>
+                        <span className="badge badge-warning">Pendiente</span>
                       )}
                     </div>
 
@@ -166,21 +168,21 @@ const AssignmentsPage = () => {
                     <div className="flex flex-col gap-1 text-xs">
                       <div className="flex items-center gap-1 text-base-content/70">
                         <Calendar className="size-3" />
-                        <span>Due: {formatDate(assignment.dueDate)}</span>
+                        <span>Entrega: {formatDate(assignment.dueDate)}</span>
                       </div>
 
                       {isCreator && (
                         <div className="flex items-center gap-1 text-base-content/70">
                           <CheckCircle className="size-3" />
                           <span>
-                            Submissions: {totalSubmissions}/{totalAssigned}
+                            Envíos: {totalSubmissions}/{totalAssigned}
                           </span>
                         </div>
                       )}
 
                       <div className="flex items-center gap-1 text-base-content/70">
                         <Clock className="size-3" />
-                        <span>Created: {formatDate(assignment.createdAt)}</span>
+                        <span>Creado: {formatDate(assignment.createdAt)}</span>
                       </div>
                     </div>
                   </div>

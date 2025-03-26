@@ -57,14 +57,16 @@ const CreateAssignmentPage = () => {
 
     files.forEach((file) => {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error(`File ${file.name} is too large. Max size is 5MB.`);
+        toast.error(
+          `El archivo ${file.name} es demasiado grande. El tamaño máximo es 5MB.`
+        );
         return;
       }
 
       // Check file type
       if (!allowedTypes.includes(file.type)) {
         toast.error(
-          `File ${file.name} has an invalid type. Only PDF and DOC/DOCX files are allowed.`
+          `El archivo ${file.name} tiene un tipo inválido. Solo se permiten archivos PDF y DOC/DOCX.`
         );
         return;
       }
@@ -98,22 +100,22 @@ const CreateAssignmentPage = () => {
     e.preventDefault();
 
     // Debug: Log form data before submission
-    console.log("Form data before submission:", formData);
+    console.log("Datos del formulario antes de enviar:", formData);
 
     if (!formData.title.trim()) {
-      return toast.error("Title is required");
+      return toast.error("El título es obligatorio");
     }
 
     if (!formData.description.trim()) {
-      return toast.error("Description is required");
+      return toast.error("La descripción es obligatoria");
     }
 
     if (!formData.dueDate) {
-      return toast.error("Due date is required");
+      return toast.error("La fecha de entrega es obligatoria");
     }
 
     if (formData.assignedTo.length === 0) {
-      return toast.error("Please assign this to at least one user");
+      return toast.error("Por favor, asigna esto a al menos un usuario");
     }
 
     try {
@@ -142,7 +144,7 @@ const CreateAssignmentPage = () => {
       }
 
       // Add right before sending to server
-      console.log("Sending assignment data to server");
+      console.log("Enviando datos de la tarea al servidor");
       for (const [key, value] of formDataToSend.entries()) {
         console.log(`${key}: ${value instanceof File ? value.name : value}`);
       }
@@ -152,8 +154,8 @@ const CreateAssignmentPage = () => {
         navigate(`/assignments/${assignment._id}`);
       }
     } catch (error) {
-      console.error("Failed to create assignment:", error);
-      toast.error(error.message || "Failed to create assignment");
+      console.error("Error al crear la tarea:", error);
+      toast.error(error.message || "Error al crear la tarea");
     }
   };
 
@@ -161,12 +163,12 @@ const CreateAssignmentPage = () => {
     <div className="h-screen pt-20">
       <div className="max-w-3xl mx-auto p-4">
         <div className="bg-base-100 rounded-lg shadow p-6">
-          <h1 className="text-2xl font-bold mb-6">Create New Assignment</h1>
+          <h1 className="text-2xl font-bold mb-6">Crear Nueva Tarea</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Title</span>
+                <span className="label-text font-medium">Título</span>
               </label>
               <input
                 type="text"
@@ -174,26 +176,26 @@ const CreateAssignmentPage = () => {
                 value={formData.title}
                 onChange={handleInputChange}
                 className="input input-bordered w-full"
-                placeholder="Assignment title"
+                placeholder="Título de la tarea"
               />
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Description</span>
+                <span className="label-text font-medium">Descripción</span>
               </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
                 className="textarea textarea-bordered w-full h-32"
-                placeholder="Detailed assignment description..."
+                placeholder="Descripción detallada de la tarea..."
               />
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Due Date</span>
+                <span className="label-text font-medium">Fecha de entrega</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -211,7 +213,7 @@ const CreateAssignmentPage = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Assign To</span>
+                <span className="label-text font-medium">Asignar a</span>
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 {users.map((user) => (
@@ -247,7 +249,9 @@ const CreateAssignmentPage = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Attachments</span>
+                <span className="label-text font-medium">
+                  Archivos adjuntos
+                </span>
               </label>
               <div className="flex items-center gap-2">
                 <button
@@ -256,7 +260,7 @@ const CreateAssignmentPage = () => {
                   className="btn btn-outline gap-2"
                 >
                   <ImagePlus className="size-4" />
-                  Add Attachments
+                  Agregar Archivos
                 </button>
                 <input
                   ref={fileInputRef}
@@ -267,7 +271,7 @@ const CreateAssignmentPage = () => {
                   onChange={handleAttachmentChange}
                 />
                 <span className="text-xs text-base-content/60">
-                  Only PDF and DOC/DOCX files (max 5MB)
+                  Solo archivos PDF y DOC/DOCX (máximo 5MB)
                 </span>
               </div>
 
@@ -301,7 +305,7 @@ const CreateAssignmentPage = () => {
                 onClick={() => navigate("/assignments")}
                 className="btn btn-outline"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="submit"
@@ -311,10 +315,10 @@ const CreateAssignmentPage = () => {
                 {isLoading ? (
                   <>
                     <Loader className="size-4 animate-spin" />
-                    Creating...
+                    Creando...
                   </>
                 ) : (
-                  "Create Assignment"
+                  "Crear Tarea"
                 )}
               </button>
             </div>

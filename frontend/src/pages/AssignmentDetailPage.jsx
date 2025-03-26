@@ -77,14 +77,16 @@ const AssignmentDetailPage = () => {
 
     files.forEach((file) => {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error(`File ${file.name} is too large. Max size is 5MB.`);
+        toast.error(
+          `El archivo ${file.name} es demasiado grande. El tamaño máximo es 5MB.`
+        );
         return;
       }
 
       // Check file type
       if (!allowedTypes.includes(file.type)) {
         toast.error(
-          `File ${file.name} has an invalid type. Only PDF and DOC/DOCX files are allowed.`
+          `El archivo ${file.name} tiene un tipo inválido. Solo se permiten archivos PDF y DOC/DOCX.`
         );
         return;
       }
@@ -122,7 +124,7 @@ const AssignmentDetailPage = () => {
     e.preventDefault();
 
     if (!submissionContent.trim()) {
-      return toast.error("Please add some content to your submission");
+      return toast.error("Por favor, agrega contenido a tu envío");
     }
 
     try {
@@ -140,13 +142,13 @@ const AssignmentDetailPage = () => {
       getAssignmentById(currentAssignment._id);
     } catch (error) {
       console.error("Failed to submit assignment:", error);
-      toast.error(error.message || "Failed to submit assignment");
+      toast.error(error.message || "Error al enviar la tarea");
     }
   };
 
   const handleGradeSubmit = async (submissionId) => {
     if (!gradeData.score || isNaN(Number(gradeData.score))) {
-      return toast.error("Please enter a valid score");
+      return toast.error("Por favor, ingresa una puntuación válida");
     }
 
     try {
@@ -168,7 +170,7 @@ const AssignmentDetailPage = () => {
           className="flex items-center gap-2 text-sm mb-6"
         >
           <ArrowLeft className="size-4" />
-          Back to assignments
+          Volver a asignaciones
         </Link>
 
         <div className="bg-base-100 rounded-lg shadow overflow-hidden">
@@ -178,13 +180,13 @@ const AssignmentDetailPage = () => {
               <h1 className="text-2xl font-bold">{currentAssignment.title}</h1>
               <div>
                 {isCreator ? (
-                  <span className="badge badge-primary">Your Assignment</span>
+                  <span className="badge badge-primary">Tu tarea</span>
                 ) : mySubmission ? (
-                  <span className="badge badge-success">Submitted</span>
+                  <span className="badge badge-success">Enviado</span>
                 ) : isPastDue ? (
-                  <span className="badge badge-error">Past Due</span>
+                  <span className="badge badge-error">Vencida</span>
                 ) : (
-                  <span className="badge badge-warning">Pending</span>
+                  <span className="badge badge-warning">Pendiente</span>
                 )}
               </div>
             </div>
@@ -192,23 +194,23 @@ const AssignmentDetailPage = () => {
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2">
                 <UserCircle className="size-4 text-base-content/70" />
-                <span>Created by: {currentAssignment.creatorId.fullName}</span>
+                <span>Creado por: {currentAssignment.creatorId.fullName}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <Calendar className="size-4 text-base-content/70" />
-                <span>Due: {formatDate(currentAssignment.dueDate)}</span>
+                <span>Entrega: {formatDate(currentAssignment.dueDate)}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <Clock className="size-4 text-base-content/70" />
-                <span>Created: {formatDate(currentAssignment.createdAt)}</span>
+                <span>Creado: {formatDate(currentAssignment.createdAt)}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <Clock className="size-4 text-base-content/70" />
                 <span>
-                  {isPastDue ? "Overdue by " : "Time remaining: "}
+                  {isPastDue ? "Vencida por " : "Tiempo restante: "}
                   {formatTimeRemaining(currentAssignment.dueDate)}
                 </span>
               </div>
@@ -217,26 +219,26 @@ const AssignmentDetailPage = () => {
 
           {/* Assignment content */}
           <div className="p-6">
-            <h2 className="text-lg font-medium mb-3">Description</h2>
+            <h2 className="text-lg font-medium mb-3">Descripción</h2>
             <p className="whitespace-pre-wrap mb-6">
               {currentAssignment.description}
             </p>
 
             {currentAssignment.attachments.length > 0 && (
               <div className="mb-6">
-                <h2 className="text-lg font-medium mb-3">Attachments</h2>
+                <h2 className="text-lg font-medium mb-3">Adjuntos</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {currentAssignment.attachments.map((attachment, index) => {
                     return (
                       <a
                         key={index}
                         href={`/api/assignments/${id}/files/assignment/${attachment._id}`}
-                        download={attachment.title || `attachment-${index + 1}`}
+                        download={attachment.title || `adjunto-${index + 1}`}
                         className="flex items-center gap-2 p-3 border rounded-lg hover:bg-base-200 transition-colors"
                       >
                         <File className="size-5 flex-shrink-0" />
                         <span className="flex-1 truncate">
-                          {attachment.title || `Attachment ${index + 1}`}
+                          {attachment.title || `Adjunto ${index + 1}`}
                         </span>
                         <Download className="size-4" />
                       </a>
@@ -250,7 +252,7 @@ const AssignmentDetailPage = () => {
             {isCreator && currentAssignment.submissions.length > 0 && (
               <div className="mt-8">
                 <h2 className="text-lg font-medium mb-3">
-                  Submissions ({currentAssignment.submissions.length})
+                  Envíos ({currentAssignment.submissions.length})
                 </h2>
                 <div className="space-y-4">
                   {currentAssignment.submissions.map((submission) => (
@@ -268,15 +270,15 @@ const AssignmentDetailPage = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-base-content/70">
-                            Submitted: {formatDate(submission.submittedAt)}
+                            Enviado: {formatDate(submission.submittedAt)}
                           </span>
                           {submission.grade?.score !== undefined ? (
                             <span className="badge badge-success">
-                              Graded: {submission.grade.score}/100
+                              Calificado: {submission.grade.score}/100
                             </span>
                           ) : (
                             <span className="badge badge-warning">
-                              Not Graded
+                              No calificado
                             </span>
                           )}
                         </div>
@@ -294,7 +296,7 @@ const AssignmentDetailPage = () => {
                           {submission.attachments?.length > 0 && (
                             <div className="mt-3">
                               <h3 className="text-sm font-medium mb-2">
-                                Attachments
+                                Adjuntos
                               </h3>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 {submission.attachments?.map(
@@ -303,15 +305,14 @@ const AssignmentDetailPage = () => {
                                       key={idx}
                                       href={`/api/assignments/files/${attachment.file}`}
                                       download={
-                                        attachment.title ||
-                                        `attachment-${idx + 1}`
+                                        attachment.title || `adjunto-${idx + 1}`
                                       }
                                       className="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 transition-colors"
                                     >
                                       <File className="size-4 flex-shrink-0" />
                                       <span className="flex-1 truncate text-sm">
                                         {attachment.title ||
-                                          `Attachment ${idx + 1}`}
+                                          `Adjunto ${idx + 1}`}
                                       </span>
                                       <Download className="size-3" />
                                     </a>
@@ -324,13 +325,13 @@ const AssignmentDetailPage = () => {
                           {!submission.grade?.score && (
                             <div className="p-4 bg-base-200 rounded-lg mt-4">
                               <h3 className="text-sm font-medium mb-3">
-                                Grade Submission
+                                Calificar envío
                               </h3>
                               <div className="space-y-3">
                                 <div className="form-control">
                                   <label className="label">
                                     <span className="label-text">
-                                      Score (out of 100)
+                                      Puntuación (sobre 100)
                                     </span>
                                   </label>
                                   <input
@@ -351,7 +352,7 @@ const AssignmentDetailPage = () => {
                                 <div className="form-control">
                                   <label className="label">
                                     <span className="label-text">
-                                      Feedback (optional)
+                                      Comentarios (opcional)
                                     </span>
                                   </label>
                                   <textarea
@@ -371,7 +372,7 @@ const AssignmentDetailPage = () => {
                                     className="btn btn-sm btn-outline"
                                     onClick={() => setViewSubmission(null)}
                                   >
-                                    Cancel
+                                    Cancelar
                                   </button>
                                   <button
                                     className="btn btn-sm btn-primary"
@@ -379,7 +380,7 @@ const AssignmentDetailPage = () => {
                                       handleGradeSubmit(submission._id)
                                     }
                                   >
-                                    Submit Grade
+                                    Enviar calificación
                                   </button>
                                 </div>
                               </div>
@@ -389,11 +390,11 @@ const AssignmentDetailPage = () => {
                           {submission.grade?.score !== undefined && (
                             <div className="p-4 bg-base-200 rounded-lg mt-4">
                               <h3 className="text-sm font-medium mb-2">
-                                Grade Details
+                                Detalles de calificación
                               </h3>
                               <div className="space-y-2">
                                 <div className="flex justify-between">
-                                  <span>Score:</span>
+                                  <span>Puntuación:</span>
                                   <span className="font-medium">
                                     {submission.grade.score}/100
                                   </span>
@@ -401,7 +402,7 @@ const AssignmentDetailPage = () => {
                                 {submission.grade.feedback && (
                                   <div>
                                     <span className="block mb-1">
-                                      Feedback:
+                                      Comentarios:
                                     </span>
                                     <p className="text-sm p-2 bg-base-300 rounded">
                                       {submission.grade.feedback}
@@ -409,7 +410,7 @@ const AssignmentDetailPage = () => {
                                   </div>
                                 )}
                                 <div className="text-xs text-base-content/70 text-right">
-                                  Graded on:{" "}
+                                  Calificado el:{" "}
                                   {formatDate(submission.grade.gradedAt)}
                                 </div>
                               </div>
@@ -421,7 +422,7 @@ const AssignmentDetailPage = () => {
                               className="btn btn-sm btn-ghost"
                               onClick={() => setViewSubmission(null)}
                             >
-                              Close
+                              Cerrar
                             </button>
                           </div>
                         </div>
@@ -431,7 +432,7 @@ const AssignmentDetailPage = () => {
                             className="btn btn-sm btn-outline"
                             onClick={() => setViewSubmission(submission._id)}
                           >
-                            View Submission
+                            Ver envío
                           </button>
                         </div>
                       )}
@@ -445,7 +446,7 @@ const AssignmentDetailPage = () => {
             {isAssignedToMe && (
               <div className="mt-8 border-t pt-6">
                 <h2 className="text-lg font-medium mb-3">
-                  {mySubmission ? "Your Submission" : "Submit Your Work"}
+                  {mySubmission ? "Tu envío" : "Envia tu trabajo"}
                 </h2>
 
                 {mySubmission ? (
@@ -459,7 +460,7 @@ const AssignmentDetailPage = () => {
                     {mySubmission.attachments?.length > 0 && (
                       <div>
                         <h3 className="text-sm font-medium mb-2">
-                          Your Attachments
+                          Tus archivos adjuntos
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {mySubmission.attachments.map((attachment, idx) => {
@@ -472,7 +473,7 @@ const AssignmentDetailPage = () => {
                               >
                                 <File className="size-4 flex-shrink-0" />
                                 <span className="flex-1 truncate text-sm">
-                                  Attachment {idx + 1}
+                                  Adjunto {idx + 1}
                                 </span>
                                 <Download className="size-3" />
                               </a>
@@ -483,22 +484,24 @@ const AssignmentDetailPage = () => {
                     )}
 
                     <div className="text-sm text-base-content/70">
-                      Submitted on: {formatDate(mySubmission.submittedAt)}
+                      Enviado el: {formatDate(mySubmission.submittedAt)}
                     </div>
 
                     {mySubmission.grade && (
                       <div className="p-4 bg-base-200 rounded-lg mt-4">
-                        <h3 className="text-sm font-medium mb-2">Your Grade</h3>
+                        <h3 className="text-sm font-medium mb-2">
+                          Tu calificación
+                        </h3>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span>Score:</span>
+                            <span>Puntuación:</span>
                             <span className="font-medium">
                               {mySubmission.grade.score}/100
                             </span>
                           </div>
                           {mySubmission.grade.feedback && (
                             <div>
-                              <span className="block mb-1">Feedback:</span>
+                              <span className="block mb-1">Comentarios:</span>
                               <p className="text-sm p-2 bg-base-300 rounded">
                                 {mySubmission.grade.feedback}
                               </p>
@@ -511,8 +514,8 @@ const AssignmentDetailPage = () => {
                 ) : isPastDue ? (
                   <div className="p-4 bg-error/10 text-error rounded-lg">
                     <p>
-                      The deadline for this assignment has passed. You can no
-                      longer submit your work.
+                      El plazo para esta tarea ha vencido. Ya no puedes enviar
+                      tu trabajo.
                     </p>
                   </div>
                 ) : (
@@ -520,12 +523,12 @@ const AssignmentDetailPage = () => {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-medium">
-                          Your Answer
+                          Tu respuesta
                         </span>
                       </label>
                       <textarea
                         className="textarea textarea-bordered h-32"
-                        placeholder="Write your answer here..."
+                        placeholder="Escribe tu respuesta aquí..."
                         value={submissionContent}
                         onChange={(e) => setSubmissionContent(e.target.value)}
                       ></textarea>
@@ -534,7 +537,7 @@ const AssignmentDetailPage = () => {
                     <div className="form-control">
                       <label className="label">
                         <span className="label-text font-medium">
-                          Attachments (Optional)
+                          Archivos Adjuntos (Opcional)
                         </span>
                       </label>
                       {/* Update the file upload section */}
@@ -545,7 +548,7 @@ const AssignmentDetailPage = () => {
                           className="btn btn-outline btn-sm gap-2"
                         >
                           <ImagePlus className="size-4" />
-                          Add Files
+                          Agregar Archivos
                         </button>
                         <input
                           ref={fileInputRef}
@@ -556,7 +559,7 @@ const AssignmentDetailPage = () => {
                           onChange={handleAttachmentChange}
                         />
                         <span className="text-xs text-base-content/60">
-                          Only PDF and DOC/DOCX files (max 5MB)
+                          Solo archivos PDF y DOC/DOCX (máximo 5MB)
                         </span>
                       </div>
 
@@ -589,7 +592,7 @@ const AssignmentDetailPage = () => {
                     <div className="flex justify-end">
                       <button type="submit" className="btn btn-primary">
                         <Upload className="size-4 mr-2" />
-                        Submit Assignment
+                        Enviar Tarea
                       </button>
                     </div>
                   </form>
