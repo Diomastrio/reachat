@@ -1,20 +1,15 @@
 import Assignment from "../models/assign.model.js";
 import User from "../models/user.model.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
+import { uploadFileToSupabase } from "../lib/supabase.js";
 
 export const createAssignment = async (req, res) => {
   try {
-    // Log the incoming request body and files
-    console.log("req.body:", req.body);
-    console.log("req.files:", req.files);
-    console.log("Request body:", req.body);
-    console.log("Request files:", req.files);
-
     // Extract form data fields
     const { title, description, dueDate } = req.body;
     const assignedTo = Array.isArray(req.body.assignedTo)
       ? req.body.assignedTo
-      : [req.body.assignedTo]; // Handle single or multiple assignees
+      : [req.body.assignedTo];
     const creatorId = req.user._id;
 
     // Validate required fields
@@ -22,13 +17,15 @@ export const createAssignment = async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Process attachments based on model schema
+    // Process attachments and upload to Supabase
     let attachments = [];
     if (req.files && req.files.length > 0) {
-      attachments = req.files.map((file) => ({
-        file: file.filename,
-        title: file.originalname,
-      }));
+      // Upload each file to Supabase
+      attachments = await Promise.all(
+        req.files.map(async (file) => {
+          return await uploadFileToSupabase(file, "assignments");
+        })
+      );
     }
 
     const newAssignment = new Assignment({
@@ -265,15 +262,15 @@ export const submitAssignmentWithFiles = async (req, res) => {
         .json({ error: "You have already submitted this assignment" });
     }
 
-    // Process uploaded files
-    const attachments = req.files
-      ? req.files.map((file) => ({
-          filename: file.filename,
-          path: file.path,
-          originalname: file.originalname,
-          mimetype: file.mimetype,
-        }))
-      : [];
+    // Process uploaded files and upload to Supabase
+    let attachments = [];
+    if (req.files && req.files.length > 0) {
+      attachments = await Promise.all(
+        req.files.map(async (file) => {
+          return await uploadFileToSupabase(file, "submissions");
+        })
+      );
+    }
 
     // Add submission
     assignment.submissions.push({

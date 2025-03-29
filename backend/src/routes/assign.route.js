@@ -54,8 +54,8 @@ router.get(
         return res.status(404).send("Attachment not found");
       }
 
-      // Send the file from the filesystem
-      const filePath = path.join(process.cwd(), "uploads/", attachment.file);
+      // Use path from attachment metadata
+      const filePath = attachment.path;
 
       // Check if file exists
       if (!fs.existsSync(filePath)) {
@@ -63,16 +63,17 @@ router.get(
       }
 
       // Set proper headers for binary file transfer
-      const contentType =
-        mime.lookup(attachment.title) || "application/octet-stream";
-      res.setHeader("Content-Type", contentType);
+      res.setHeader(
+        "Content-Type",
+        attachment.mimetype || "application/octet-stream"
+      );
       res.setHeader(
         "Content-Disposition",
-        `attachment; filename="${encodeURIComponent(attachment.title)}"`
+        `attachment; filename="${encodeURIComponent(attachment.originalname)}"`
       );
       res.setHeader("Cache-Control", "no-cache");
 
-      // Use streams instead of sendFile for more reliable binary transfer
+      // Use streams for file transfer
       const fileStream = fs.createReadStream(filePath);
       fileStream.pipe(res);
     } catch (error) {
@@ -82,39 +83,62 @@ router.get(
   }
 );
 
+// Updated route to serve files using the path stored in the attachment schema
 router.get("/files/:filename", protectRoute, async (req, res) => {
   try {
     const { filename } = req.params;
-    const filePath = path.join(process.cwd(), "uploads/", filename);
 
-    // Check if file exists
+    // Find assignment that contains this file (either in assignment attachments or submission attachments)
+    const assignment = await Assignment.findOne({
+      $or: [
+        { "attachments.filename": filename },
+        { "submissions.attachments.filename": filename },
+      ],
+    });
+
+    if (!assignment) {
+      return res.status(404).send("File not found");
+    }
+
+    // Try to find attachment in assignment attachments
+    let attachment = assignment.attachments.find(
+      (a) => a.filename === filename
+    );
+
+    // If not there, look in submissions
+    if (!attachment) {
+      for (const submission of assignment.submissions) {
+        attachment = submission.attachments.find(
+          (a) => a.filename === filename
+        );
+        if (attachment) break;
+      }
+    }
+
+    if (!attachment) {
+      return res.status(404).send("File not found");
+    }
+
+    // Use the path stored in the attachment metadata
+    const filePath = attachment.path;
+
+    // Verify file exists on disk
     if (!fs.existsSync(filePath)) {
       return res.status(404).send("File not found on server");
     }
 
-    // Find original name and mime type as before
-    const assignment = await Assignment.findOne({
-      "submissions.attachments.filename": filename,
-    });
-
-    let originalName = filename;
-    let mimeType = "application/octet-stream";
-
-    if (assignment) {
-      // Your existing code to find attachment details
-      // ...
-    }
-
-    // Set proper headers for binary file transfer
-    const contentType = mime.lookup(originalName) || mimeType;
-    res.setHeader("Content-Type", contentType);
+    // Set proper headers for binary file download
+    res.setHeader(
+      "Content-Type",
+      attachment.mimetype || "application/octet-stream"
+    );
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${encodeURIComponent(originalName)}"`
+      `attachment; filename="${encodeURIComponent(attachment.originalname)}"`
     );
     res.setHeader("Cache-Control", "no-cache");
 
-    // Use streams instead of sendFile for more reliable binary transfer
+    // Use streams for efficient file transfer
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
   } catch (error) {

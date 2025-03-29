@@ -232,13 +232,15 @@ const AssignmentDetailPage = () => {
                     return (
                       <a
                         key={index}
-                        href={`/api/assignments/${id}/files/assignment/${attachment._id}`}
-                        download={attachment.title || `adjunto-${index + 1}`}
+                        href={attachment.url} // Replace existing path with direct Supabase URL
+                        download={
+                          attachment.originalname || `adjunto-${index + 1}`
+                        }
                         className="flex items-center gap-2 p-3 border rounded-lg hover:bg-base-200 transition-colors"
                       >
                         <File className="size-5 flex-shrink-0" />
                         <span className="flex-1 truncate">
-                          {attachment.title || `Adjunto ${index + 1}`}
+                          {attachment.originalname || `Adjunto ${index + 1}`}
                         </span>
                         <Download className="size-4" />
                       </a>
@@ -303,15 +305,16 @@ const AssignmentDetailPage = () => {
                                   (attachment, idx) => (
                                     <a
                                       key={idx}
-                                      href={`/api/assignments/files/${attachment.file}`}
+                                      href={attachment.url} // Replace existing path with direct Supabase URL
                                       download={
-                                        attachment.title || `adjunto-${idx + 1}`
+                                        attachment.originalname ||
+                                        `adjunto-${idx + 1}`
                                       }
                                       className="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 transition-colors"
                                     >
                                       <File className="size-4 flex-shrink-0" />
                                       <span className="flex-1 truncate text-sm">
-                                        {attachment.title ||
+                                        {attachment.originalname ||
                                           `Adjunto ${idx + 1}`}
                                       </span>
                                       <Download className="size-3" />
@@ -463,17 +466,18 @@ const AssignmentDetailPage = () => {
                           Tus archivos adjuntos
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {mySubmission.attachments.map((attachment, idx) => {
+                          {mySubmission.attachments?.map((attachment, idx) => {
                             return (
                               <a
                                 key={idx}
-                                href={attachment}
-                                download={`my-attachment-${idx + 1}`}
+                                href={attachment.url} // Replace existing path with direct Supabase URL
+                                download={attachment.originalname}
                                 className="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 transition-colors"
                               >
                                 <File className="size-4 flex-shrink-0" />
                                 <span className="flex-1 truncate text-sm">
-                                  Adjunto {idx + 1}
+                                  {attachment.originalname ||
+                                    `Adjunto ${idx + 1}`}
                                 </span>
                                 <Download className="size-3" />
                               </a>
