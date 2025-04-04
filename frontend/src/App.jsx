@@ -10,6 +10,11 @@ import AssignmentDetailPage from "./pages/AssignmentDetailPage";
 import CreateAssignmentPage from "./pages/CreateAssignmentPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import QuizzesPage from "./pages/QuizzesPage";
+import CreateQuizPage from "./pages/CreateQuizPage";
+import QuizDetailPage from "./pages/QuizDetailPage";
+import TakeQuizPage from "./pages/TakeQuizPage";
+import QuizResultsPage from "./pages/QuizResultsPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
@@ -77,6 +82,26 @@ const App = () => {
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route
+          path="/quizzes"
+          element={authUser ? <QuizzesPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/quizzes/create"
+          element={authUser ? <CreateQuizPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/quizzes/:id"
+          element={authUser ? <QuizDetailPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/quizzes/:id/take"
+          element={authUser ? <TakeQuizPage /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/quizzes/:id/results"
+          element={authUser ? <QuizResultsPage /> : <Navigate to="/login" />}
+        />
       </Routes>
 
       <Toaster />

@@ -127,7 +127,7 @@ const AssignmentsPage = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredAssignments.map((assignment) => {
               const isCreator = assignment.creatorId._id === authUser._id;
               const hasSubmitted = assignment.submissions.some(
@@ -145,7 +145,7 @@ const AssignmentsPage = () => {
                 >
                   <div className="card-body">
                     <div className="flex justify-between items-start">
-                      <h2 className="card-title text-base">
+                      <h2 className="card-title text-base break-words">
                         {assignment.title}
                       </h2>
                       {isCreator ? (
@@ -165,10 +165,12 @@ const AssignmentsPage = () => {
                       {assignment.description}
                     </p>
 
-                    <div className="flex flex-col gap-1 text-xs">
+                    <div className="flex flex-wrap gap-1 text-xs">
                       <div className="flex items-center gap-1 text-base-content/70">
-                        <Calendar className="size-3" />
-                        <span>Entrega: {formatDate(assignment.dueDate)}</span>
+                        <Calendar className="size-3 flex-shrink-0" />
+                        <span className="truncate">
+                          Entrega: {formatDate(assignment.dueDate)}
+                        </span>
                       </div>
 
                       {isCreator && (

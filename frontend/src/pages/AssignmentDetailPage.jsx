@@ -175,9 +175,11 @@ const AssignmentDetailPage = () => {
 
         <div className="bg-base-100 rounded-lg shadow overflow-hidden">
           {/* Assignment header */}
-          <div className="p-6 border-b border-base-300">
-            <div className="flex items-start justify-between">
-              <h1 className="text-2xl font-bold">{currentAssignment.title}</h1>
+          <div className="p-4 sm:p-6 border-b border-base-300">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <h1 className="text-xl sm:text-2xl font-bold">
+                {currentAssignment.title}
+              </h1>
               <div>
                 {isCreator ? (
                   <span className="badge badge-primary">Tu tarea</span>
@@ -190,11 +192,15 @@ const AssignmentDetailPage = () => {
                 )}
               </div>
             </div>
+          </div>
 
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
               <div className="flex items-center gap-2">
-                <UserCircle className="size-4 text-base-content/70" />
-                <span>Creado por: {currentAssignment.creatorId.fullName}</span>
+                <UserCircle className="size-4 text-base-content/70 flex-shrink-0" />
+                <span className="truncate">
+                  Creado por: {currentAssignment.creatorId.fullName}
+                </span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -215,12 +221,9 @@ const AssignmentDetailPage = () => {
                 </span>
               </div>
             </div>
-          </div>
 
-          {/* Assignment content */}
-          <div className="p-6">
             <h2 className="text-lg font-medium mb-3">Descripción</h2>
-            <p className="whitespace-pre-wrap mb-6">
+            <p className="whitespace-pre-wrap break-words mb-6">
               {currentAssignment.description}
             </p>
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
-import { Users, Search, MoreVertical } from "lucide-react";
+import { Users, Search, MoreVertical, X } from "lucide-react";
 const ChatActionsModal = ({
   isOpen,
   onClose,
@@ -42,7 +42,7 @@ const ChatActionsModal = ({
     </div>
   );
 };
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
   const {
     getUsers,
     users,
@@ -83,7 +83,16 @@ const Sidebar = () => {
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
+    <aside className="h-full w-full md:w-72 border-r border-base-300 flex flex-col transition-all duration-200 relative">
+      {/* Close button for mobile only */}
+      <button
+        onClick={onClose}
+        className="md:hidden absolute top-2 right-2 btn btn-sm btn-circle"
+      >
+        <X className="size-4" />
+      </button>
+
+      {/* Sidebar content */}
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />

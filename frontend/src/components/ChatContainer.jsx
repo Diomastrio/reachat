@@ -191,7 +191,7 @@ const ChatContainer = () => {
           </ul>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
         {filteredMessages.map((message, index) => {
           const showChevron =
             message.senderId === authUser._id &&
@@ -208,7 +208,7 @@ const ChatContainer = () => {
               onMouseLeave={() => setHoveredMessageId(null)}
             >
               <div className="chat-image avatar">
-                <div className="size-10 rounded-full border">
+                <div className="size-8 sm:size-10 rounded-full border">
                   <img
                     src={
                       message.senderId === authUser._id
@@ -248,7 +248,7 @@ const ChatContainer = () => {
                   </div>
                 )}
                 <div
-                  className={`chat-bubble flex ${
+                  className={`chat-bubble max-w-[75%] sm:max-w-[65%] break-words flex ${
                     message.isUrgent ? "border-2 border-error/50" : ""
                   }`}
                 >
@@ -256,10 +256,12 @@ const ChatContainer = () => {
                     <img
                       src={message.image}
                       alt="Attachment"
-                      className="sm:max-w-[200px] rounded-md mb-2"
+                      className="max-w-full rounded-md mb-2"
                     />
                   )}
-                  {message.text && <p>{message.text}</p>}
+                  {message.text && (
+                    <p className="text-sm sm:text-base">{message.text}</p>
+                  )}
                 </div>
               </div>
               {message.senderId === authUser._id && (
