@@ -3,6 +3,7 @@ import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { Users, Search, MoreVertical, X } from "lucide-react";
+
 const ChatActionsModal = ({
   isOpen,
   onClose,
@@ -42,6 +43,7 @@ const ChatActionsModal = ({
     </div>
   );
 };
+
 const Sidebar = ({ onClose }) => {
   const {
     getUsers,
@@ -96,9 +98,9 @@ const Sidebar = ({ onClose }) => {
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
-          <span className="font-medium hidden lg:block">Docentes</span>
+          <span className="font-medium">Docentes</span>
         </div>
-        <div className="mt-3 hidden lg:block">
+        <div className="mt-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-base-content/50" />
             <input
@@ -110,7 +112,7 @@ const Sidebar = ({ onClose }) => {
             />
           </div>
         </div>
-        <div className="mt-3 hidden lg:flex items-center gap-2">
+        <div className="mt-3 flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
               type="checkbox"
@@ -124,7 +126,7 @@ const Sidebar = ({ onClose }) => {
             ({onlineUsers.length - 1} online)
           </span>
         </div>
-        <div className="mt-3 hidden lg:block">
+        <div className="mt-3">
           <button
             onClick={toggleShowArchived}
             className="btn btn-ghost btn-sm text-xs flex items-center gap-2"
@@ -156,7 +158,7 @@ const Sidebar = ({ onClose }) => {
                   }
                 `}
               >
-                <div className="relative mx-auto lg:mx-0">
+                <div className="relative">
                   <img
                     src={user.profilePic || "/avatar.png"}
                     alt={user.name}
@@ -170,8 +172,8 @@ const Sidebar = ({ onClose }) => {
                   )}
                 </div>
 
-                {/* User info - only visible on larger screens */}
-                <div className="hidden lg:block text-left min-w-0 flex-1">
+                {/* User info - visible on all screens */}
+                <div className="text-left min-w-0 flex-1">
                   <div className="font-medium truncate">{user.fullName}</div>
                   <div className="text-sm text-zinc-400">
                     {onlineUsers.includes(user._id) ? "Online" : "Offline"}

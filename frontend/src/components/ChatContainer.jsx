@@ -123,7 +123,7 @@ const ChatContainer = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-auto">
+    <div className="flex-1 flex flex-col h-full overflow-hidden">
       <ChatHeader />
       <div className="px-4 py-2 border-b border-base-300 flex items-center justify-between gap-2">
         {/* Search input */}
@@ -293,11 +293,13 @@ const ChatContainer = () => {
           setModalVisible(false);
         }}
       />
-      <MessageInput
-        editingMessage={editingMessage}
-        setEditingMessage={setEditingMessage}
-        editMessage={editMessage}
-      />
+      <div className="mt-auto">
+        <MessageInput
+          editingMessage={editingMessage}
+          setEditingMessage={setEditingMessage}
+          editMessage={editMessage}
+        />
+      </div>
     </div>
   );
 };
