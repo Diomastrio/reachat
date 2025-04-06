@@ -105,6 +105,7 @@ const LoginPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
+              data-testid="login-button"
               disabled={isLoggingIn}
             >
               {isLoggingIn ? (

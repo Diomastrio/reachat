@@ -15,6 +15,7 @@ import CreateQuizPage from "./pages/CreateQuizPage";
 import QuizDetailPage from "./pages/QuizDetailPage";
 import TakeQuizPage from "./pages/TakeQuizPage";
 import QuizResultsPage from "./pages/QuizResultsPage";
+import ErrorPage from "./pages/ErrorPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
@@ -46,7 +47,8 @@ const App = () => {
     <div data-theme={theme}>
       <Navbar />
 
-      <Routes>
+      <Routes errorElement={<ErrorPage />}>
+        <Route path="*" element={<ErrorPage />} />
         <Route
           path="/"
           element={authUser ? <HomePage /> : <Navigate to="/login" />}
