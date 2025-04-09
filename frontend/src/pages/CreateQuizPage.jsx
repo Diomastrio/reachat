@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuizStore } from "../store/useQuizStore";
 import { useChatStore } from "../store/useChatStore";
@@ -40,6 +40,11 @@ const CreateQuizPage = () => {
     correctAnswer: "",
     points: 1,
   });
+
+  useEffect(() => {
+    // Fetch users that can be assigned to quizzes
+    getUsers();
+  }, [getUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -159,6 +164,16 @@ const CreateQuizPage = () => {
       ...prev,
       options: prev.options.filter((_, i) => i !== index),
     }));
+  };
+
+  const handleUserSelection = (userId) => {
+    setFormData((prev) => {
+      const assignedTo = prev.assignedTo.includes(userId)
+        ? prev.assignedTo.filter((id) => id !== userId)
+        : [...prev.assignedTo, userId];
+
+      return { ...prev, assignedTo };
+    });
   };
 
   return (
@@ -292,6 +307,72 @@ const CreateQuizPage = () => {
                   </label>
                 </div>
               </div>
+            </div>
+
+            <div className="form-control mt-4">
+              <label className="label">
+                <span className="label-text font-medium">
+                  Asignar a usuarios
+                </span>
+              </label>
+
+              <div className="mb-3 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={formData.isPublic}
+                  onChange={(e) => {
+                    // Clear assigned users when making quiz public
+                    const isPublic = e.target.checked;
+                    setFormData({
+                      ...formData,
+                      isPublic,
+                      assignedTo: isPublic ? [] : formData.assignedTo,
+                    });
+                  }}
+                />
+                <span>Hacer cuestionario público (disponible para todos)</span>
+              </div>
+
+              {!formData.isPublic ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {users.map((user) => (
+                    <label
+                      key={user._id}
+                      className={`
+                        flex items-center gap-2 p-2 rounded-lg cursor-pointer border
+                        ${
+                          formData.assignedTo.includes(user._id)
+                            ? "border-primary bg-primary/10"
+                            : "border-base-300"
+                        }
+                      `}
+                    >
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm"
+                        checked={formData.assignedTo.includes(user._id)}
+                        onChange={() => handleUserSelection(user._id)}
+                      />
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={user.profilePic || "/avatar.png"}
+                          alt={user.fullName}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <span className="text-sm">{user.fullName}</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-info/10 p-4 rounded-lg border border-info/30">
+                  <p>
+                    Este cuestionario será accesible para todos los usuarios. No
+                    es necesario asignar usuarios específicos.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
