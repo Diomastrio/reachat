@@ -33,6 +33,16 @@ Caracteristicas:
 - 📅 Sistema de gestión de tareas y recordatorios
 - 📧 Envío de correos electrónicos para recuperación de cuenta
 - ⏱️ Tokens de restablecimiento con expiración por seguridad
+- 📚 Sistema de asignación de tareas con fechas de entrega
+- 📎 Adjuntar archivos (PDF, DOC, DOCX) a tareas
+- 📤 Envío y calificación de trabajos en tiempo real
+- 📊 Notificaciones para nuevas tareas y calificaciones
+- 📝 Creación de cuestionarios con diferentes tipos de preguntas
+- ❓ Soporte para preguntas de opción múltiple, verdadero/falso, respuesta corta y larga
+- 🔢 Calificación automática de cuestionarios
+- 📈 Estadísticas detalladas de resultados de cuestionarios
+- ⏱️ Control de tiempo para realización de cuestionarios
+- 🎯 Configuración de puntaje mínimo para aprobar
 
 ### configuración archivo .env en la raiz del backend
 
@@ -71,4 +81,10 @@ npm start
 
 ```shell
 npm run dev
+```
+
+### Iniciar las pruebas automatizadas
+
+```shell
+npm run test:watch
 ```
